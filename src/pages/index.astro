@@ -1,0 +1,404 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+
+// Code examples
+const algorithmExample = `<span class="text-gray-500">while</span> diagnostics > <span class="json-number">0</span>:
+  <span class="text-gray-500">for each</span> diagnostic, get candidate fixes
+  <span class="text-gray-500">for each</span> candidate:
+    apply to in-memory copy
+    re-run type checker
+    measure delta (errors removed - errors introduced)
+  select best candidate (max delta)
+  commit and repeat`;
+
+const repairPlanExample = `{
+  <span class="json-key">"status"</span>: <span class="json-string">"12 diagnostics → 0 diagnostics"</span>,
+  <span class="json-key">"confidence"</span>: <span class="json-string">"verified"</span>,
+  <span class="json-key">"steps"</span>: [
+    {
+      <span class="json-key">"action"</span>: <span class="json-string">"Add missing import"</span>,
+      <span class="json-key">"resolves"</span>: <span class="json-number">7</span>,
+      <span class="json-key">"file"</span>: <span class="json-string">"src/api.ts"</span>,
+      <span class="json-key">"change"</span>: <span class="json-string">"import { User } from './types'"</span>
+    },
+    {
+      <span class="json-key">"action"</span>: <span class="json-string">"Fix argument type"</span>,
+      <span class="json-key">"resolves"</span>: <span class="json-number">3</span>,
+      <span class="json-key">"file"</span>: <span class="json-string">"src/handlers.ts"</span>
+    },
+    {
+      <span class="json-key">"action"</span>: <span class="json-string">"Add null check"</span>,
+      <span class="json-key">"resolves"</span>: <span class="json-number">2</span>,
+      <span class="json-key">"file"</span>: <span class="json-string">"src/utils.ts"</span>
+    }
+  ]
+}`;
+
+const dispositionExample = `{
+  <span class="json-key">"remaining"</span>: [
+    {
+      <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2322: Type 'string' not assignable..."</span>,
+      <span class="json-key">"disposition"</span>: <span class="json-string">"AutoFixable"</span>,
+      <span class="json-key">"risk"</span>: <span class="json-string">"low"</span>,
+      <span class="json-key">"candidates"</span>: <span class="json-number">1</span>
+    },
+    {
+      <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2345: Argument type mismatch..."</span>,
+      <span class="json-key">"disposition"</span>: <span class="json-string">"NeedsJudgment"</span>,
+      <span class="json-key">"candidates"</span>: <span class="json-number">3</span>,
+      <span class="json-key">"options"</span>: [<span class="json-string">"cast"</span>, <span class="json-string">"convert"</span>, <span class="json-string">"guard"</span>]
+    },
+    {
+      <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2339: Property does not exist..."</span>,
+      <span class="json-key">"disposition"</span>: <span class="json-string">"NoCandidate"</span>,
+      <span class="json-key">"note"</span>: <span class="json-string">"Requires semantic decision"</span>
+    }
+  ]
+}`;
+
+---
+
+<Layout title="ts-repair - Verified TypeScript Repairs for Agents">
+  <!-- Navigation -->
+  <nav class="fixed top-0 w-full z-50 bg-gray-950/80 backdrop-blur-md border-b border-gray-800">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="./" class="text-xl font-bold text-repair-400">ts-repair</a>
+      <div class="flex gap-6 items-center">
+        <a href="#how-it-works" class="text-gray-400 hover:text-white transition-colors">How it Works</a>
+        <a href="#dispositions" class="text-gray-400 hover:text-white transition-colors">Dispositions</a>
+        <a href="#coming-soon" class="text-gray-400 hover:text-white transition-colors">Coming Soon</a>
+        <a href="https://github.com/ts-repair/ts-repair" class="btn-secondary text-sm py-2 px-4">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="min-h-screen flex flex-col justify-center pt-20 pb-16 px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="inline-block mb-6 px-4 py-2 rounded-full bg-repair-500/10 border border-repair-500/30 text-repair-400 text-sm font-medium">
+        Stop guessing. Start verifying.
+      </div>
+
+      <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+        Verified TypeScript<br/>Repairs for Agents
+      </h1>
+
+      <p class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+        ts-repair is an oracle-guided repair engine that turns TypeScript diagnostics into
+        <strong class="text-white">verified repair plans</strong>. Every fix is proven to reduce errors
+        before your agent sees it.
+      </p>
+
+      <div class="flex gap-4 justify-center mb-16">
+        <a href="#coming-soon" class="btn-primary">Get Started</a>
+        <a href="#how-it-works" class="btn-secondary">See How It Works</a>
+      </div>
+
+      <!-- Quick visual of the loop -->
+      <div class="flex items-center justify-center gap-4 text-gray-500 flex-wrap">
+        <div class="px-4 py-2 rounded bg-gray-900 border border-gray-800 font-mono text-sm">
+          TypeScript errors
+        </div>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+        <div class="px-4 py-2 rounded bg-gray-900 border border-gray-800 font-mono text-sm">
+          ts-repair verifies fixes
+        </div>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+        <div class="px-4 py-2 rounded bg-repair-500/20 border border-repair-500/30 text-repair-400 font-mono text-sm">
+          Verified repair plan
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Problem Section -->
+  <section class="py-24 px-6 bg-gray-900/50">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-8 text-center">The Agent Iteration Problem</h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="text-red-400 text-lg font-semibold mb-3">Without ts-repair</div>
+          <ul class="space-y-3 text-gray-400">
+            <li class="flex gap-3">
+              <span class="text-red-400">✗</span>
+              <span>Agent receives raw TypeScript errors</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-red-400">✗</span>
+              <span>Guesses at fixes based on error messages</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-red-400">✗</span>
+              <span>Applies fix, runs compiler, new errors appear</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-red-400">✗</span>
+              <span>Repeat until lucky or out of tokens</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-repair-500/30">
+          <div class="text-repair-400 text-lg font-semibold mb-3">With ts-repair</div>
+          <ul class="space-y-3 text-gray-400">
+            <li class="flex gap-3">
+              <span class="text-repair-400">✓</span>
+              <span>Agent receives verified repair plan</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-repair-400">✓</span>
+              <span>Every fix proven to reduce errors</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-repair-400">✓</span>
+              <span>Fixes ordered for maximum impact</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-repair-400">✓</span>
+              <span>Apply confidently, no guesswork</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Insight -->
+  <section class="py-24 px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-6">The Key Insight</h2>
+      <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+        Instead of giving agents raw errors and hoping they fix them, ts-repair
+        <strong class="text-white">speculatively applies every candidate fix</strong>,
+        re-runs the type checker, and
+        <strong class="text-white">only surfaces fixes that provably reduce errors</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="py-24 px-6 bg-gray-900/50">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">How It Works</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        ts-repair treats the TypeScript compiler as a <strong class="text-white">verification oracle</strong>.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-12 items-start">
+        <div>
+          <h3 class="text-xl font-semibold mb-4">The Algorithm</h3>
+          <div class="code-block mb-6">
+            <pre><code set:html={algorithmExample} /></pre>
+          </div>
+          <p class="text-gray-400 text-sm">
+            For each diagnostic, ts-repair generates candidate fixes (from TypeScript's Language Service
+            and custom repair recipes), applies each to an in-memory copy, re-runs the type checker,
+            and measures the exact delta. Only fixes that provably help are included in the plan.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-4">The Output</h3>
+          <div class="code-block border-repair-500/30">
+            <pre><code set:html={repairPlanExample} /></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section class="py-24 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-12 text-center">Architecture</h2>
+
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 class="font-semibold mb-2">Virtual File System</h3>
+          <p class="text-gray-400 text-sm">
+            In-memory snapshots for speculative evaluation
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3 class="font-semibold mb-2">TypeScript Oracle</h3>
+          <p class="text-gray-400 text-sm">
+            Language Service for diagnostics and candidate fixes
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+          </div>
+          <h3 class="font-semibold mb-2">Repair Planner</h3>
+          <p class="text-gray-400 text-sm">
+            Greedy selection with solver fallback for conflicts
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+          </div>
+          <h3 class="font-semibold mb-2">Classifier</h3>
+          <p class="text-gray-400 text-sm">
+            Labels each diagnostic by disposition
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dispositions -->
+  <section id="dispositions" class="py-24 px-6 bg-gray-900/50">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">Diagnostic Dispositions</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        After verification, each remaining diagnostic is classified so agents know exactly what to do.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-12 items-start">
+        <div class="space-y-4">
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">AutoFixable</span>
+              <span class="text-gray-400 text-sm">Low risk</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Verified fix exists and is safe to auto-apply. Add imports, fix typos, add async/await.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-amber-500/20 text-amber-400">AutoFixableHighRisk</span>
+              <span class="text-gray-400 text-sm">Semantic risk</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Verified fix exists but involves type assertions or coercions. Opt-in to apply.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-purple-500/20 text-purple-400">NeedsJudgment</span>
+              <span class="text-gray-400 text-sm">Multiple options</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Multiple verified fixes with comparable scores. Surface ranked options to the agent or human.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-gray-500/20 text-gray-400">NoCandidate</span>
+              <span class="text-gray-400 text-sm">Semantic work</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              No generated fix reduces diagnostics. Treat as a semantic work item requiring design decisions.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Example Output</h3>
+          <div class="code-block">
+            <pre><code set:html={dispositionExample} /></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guarantees -->
+  <section class="py-24 px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-12">Guarantees</h2>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Verified Fixes</h3>
+          <p class="text-gray-400 text-sm">
+            Every fix in the plan is proven by the TypeScript compiler to reduce errors. No heuristics.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Monotonic Progress</h3>
+          <p class="text-gray-400 text-sm">
+            Each committed fix reduces the diagnostic count. No fix that introduces more errors than it resolves.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Deterministic Output</h3>
+          <p class="text-gray-400 text-sm">
+            Same input yields the same repair plan. No randomness, no heuristics that vary by run.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coming Soon Section -->
+  <section id="coming-soon" class="py-24 px-6 bg-gray-900/50">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-4">Coming Soon</h2>
+      <p class="text-gray-400 mb-8">
+        ts-repair is under active development. Star the repo to follow progress.
+      </p>
+
+      <div class="flex gap-4 justify-center">
+        <a href="https://github.com/ts-repair/ts-repair" class="btn-primary">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 px-6 border-t border-gray-800">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-gray-500">
+        <span class="text-repair-400 font-bold">ts-repair</span> — Verified TypeScript repairs for agents
+      </div>
+      <div class="flex gap-6">
+        <a href="https://github.com/ts-repair/ts-repair" class="text-gray-400 hover:text-white transition-colors">GitHub</a>
+      </div>
+    </div>
+  </footer>
+</Layout>

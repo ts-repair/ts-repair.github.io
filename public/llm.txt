@@ -1,0 +1,93 @@
+# ts-repair - Oracle-Guided TypeScript Repair Engine
+
+> ts-repair turns TypeScript compiler diagnostics into verified repair plans for agents.
+> Every fix is proven to reduce errors before your agent sees it.
+
+## What is ts-repair?
+
+ts-repair is an oracle-guided TypeScript repair engine. Instead of giving agents raw compiler errors and hoping they fix them, ts-repair:
+
+1. Speculatively applies every candidate fix
+2. Re-runs the TypeScript type checker
+3. Only surfaces fixes that provably reduce errors
+
+Agents receive a **verified repair plan** with ordered steps, not guesswork.
+
+## How It Works
+
+```
+while diagnostics > 0:
+  for each diagnostic, get candidate fixes
+  for each candidate:
+    apply to in-memory copy
+    re-run type checker
+    measure delta (errors removed - errors introduced)
+  select best candidate (max delta)
+  commit and repeat
+```
+
+## Site Structure
+
+- Homepage: https://ts-repair.ai/
+- Documentation Hub: https://ts-repair.ai/docs/
+
+## Diagnostic Dispositions
+
+After verification, each remaining diagnostic is classified:
+
+| Disposition | Meaning | Agent Action |
+|-------------|---------|--------------|
+| **AutoFixable** | Verified fix exists, low risk | Apply automatically |
+| **AutoFixableHighRisk** | Verified fix exists, semantic risk | Opt-in apply |
+| **NeedsJudgment** | Multiple valid fixes | Surface to LLM for decision |
+| **NoCandidate** | No fix helps | Treat as semantic work |
+
+## Installation
+
+```bash
+# Install ts-repair
+npm install -g ts-repair
+
+# Get a verified repair plan
+ts-repair repair ./tsconfig.json
+
+# Output as JSON for agent consumption
+ts-repair repair ./tsconfig.json --json
+
+# Apply AutoFixable repairs automatically
+ts-repair repair ./tsconfig.json --apply
+```
+
+## Programmatic API
+
+```typescript
+import { repair } from 'ts-repair';
+
+const plan = await repair({
+  project: './tsconfig.json',
+  maxCandidates: 50,
+  allowRegressions: false,
+});
+
+console.log(`${plan.initialErrors} → ${plan.finalErrors} errors`);
+
+for (const step of plan.steps) {
+  console.log(`Apply: ${step.fix.name} @ ${step.file}:${step.line}`);
+}
+```
+
+## Guarantees
+
+- **Verified Fixes**: Every fix is proven by the TypeScript compiler to reduce errors
+- **Monotonic Progress**: Each committed fix reduces the diagnostic count
+- **Deterministic Output**: Same input yields the same repair plan
+
+## Related Repositories
+
+- Repair Engine: https://github.com/ts-repair/ts-repair
+- Agent Skill: https://github.com/ts-repair/skill
+- Website: https://github.com/ts-repair/ts-repair.github.io
+
+## Contact
+
+Report issues: https://github.com/ts-repair/ts-repair/issues

@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Temp directories
+.docs-temp/
+
+# Generated content from fetch-docs (but keep config.ts)
+src/content/docs/
+!src/content/config.ts
+
+# Astro
+.astro/
+
+# IDE
+.vscode/
+.idea/
+
+# System
+.DS_Store
+
+# Logs
+*.log
+
+# Env files
+.env
+.env.*
