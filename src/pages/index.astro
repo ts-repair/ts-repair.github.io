@@ -38,24 +38,57 @@ const repairPlanExample = `{
 const dispositionExample = `{
   <span class="json-key">"remaining"</span>: [
     {
-      <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2322: Type 'string' not assignable..."</span>,
+      <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2304: Cannot find name 'foo'"</span>,
       <span class="json-key">"disposition"</span>: <span class="json-string">"AutoFixable"</span>,
-      <span class="json-key">"risk"</span>: <span class="json-string">"low"</span>,
-      <span class="json-key">"candidates"</span>: <span class="json-number">1</span>
+      <span class="json-key">"risk"</span>: <span class="json-string">"low"</span>
+    },
+    {
+      <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2352: Type assertion required"</span>,
+      <span class="json-key">"disposition"</span>: <span class="json-string">"AutoFixableHighRisk"</span>,
+      <span class="json-key">"risk"</span>: <span class="json-string">"high"</span>
     },
     {
       <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2345: Argument type mismatch..."</span>,
       <span class="json-key">"disposition"</span>: <span class="json-string">"NeedsJudgment"</span>,
-      <span class="json-key">"candidates"</span>: <span class="json-number">3</span>,
-      <span class="json-key">"options"</span>: [<span class="json-string">"cast"</span>, <span class="json-string">"convert"</span>, <span class="json-string">"guard"</span>]
+      <span class="json-key">"candidates"</span>: <span class="json-number">3</span>
     },
     {
       <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2339: Property does not exist..."</span>,
-      <span class="json-key">"disposition"</span>: <span class="json-string">"NoCandidate"</span>,
-      <span class="json-key">"note"</span>: <span class="json-string">"Requires semantic decision"</span>
+      <span class="json-key">"disposition"</span>: <span class="json-string">"NoGeneratedCandidate"</span>,
+      <span class="json-key">"note"</span>: <span class="json-string">"No TypeScript fix available"</span>
+    },
+    {
+      <span class="json-key">"diagnostic"</span>: <span class="json-string">"TS2322: Type mismatch..."</span>,
+      <span class="json-key">"disposition"</span>: <span class="json-string">"NoVerifiedCandidate"</span>,
+      <span class="json-key">"note"</span>: <span class="json-string">"Fixes exist but none reduce errors"</span>
     }
   ]
 }`;
+
+// MCP configuration examples
+const claudeCodeConfig = `{
+  <span class="json-key">"mcpServers"</span>: {
+    <span class="json-key">"ts-repair"</span>: {
+      <span class="json-key">"command"</span>: <span class="json-string">"npx"</span>,
+      <span class="json-key">"args"</span>: [<span class="json-string">"ts-repair"</span>, <span class="json-string">"mcp-server"</span>]
+    }
+  }
+}`;
+
+const openCodeConfig = `{
+  <span class="json-key">"mcp"</span>: {
+    <span class="json-key">"ts-repair"</span>: {
+      <span class="json-key">"type"</span>: <span class="json-string">"local"</span>,
+      <span class="json-key">"command"</span>: [<span class="json-string">"npx"</span>, <span class="json-string">"ts-repair"</span>, <span class="json-string">"mcp-server"</span>],
+      <span class="json-key">"enabled"</span>: <span class="json-number">true</span>
+    }
+  }
+}`;
+
+const codexConfig = `<span class="text-gray-500">[mcp_servers.ts-repair]</span>
+command = <span class="json-string">"npx"</span>
+args = [<span class="json-string">"ts-repair"</span>, <span class="json-string">"mcp-server"</span>]
+enabled = <span class="json-number">true</span>`;
 
 ---
 
@@ -65,9 +98,10 @@ const dispositionExample = `{
     <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
       <a href="./" class="text-xl font-bold text-repair-400">ts-repair</a>
       <div class="flex gap-6 items-center">
-        <a href="#how-it-works" class="text-gray-400 hover:text-white transition-colors">How it Works</a>
-        <a href="#dispositions" class="text-gray-400 hover:text-white transition-colors">Dispositions</a>
-        <a href="#coming-soon" class="text-gray-400 hover:text-white transition-colors">Coming Soon</a>
+        <a href="#quickstart" class="text-gray-400 hover:text-white transition-colors">Quickstart</a>
+        <a href="#cli" class="text-gray-400 hover:text-white transition-colors">CLI</a>
+        <a href="#agent-integration" class="text-gray-400 hover:text-white transition-colors">Agents</a>
+        <a href="https://github.com/ts-repair/ts-repair/tree/main/docs" class="text-gray-400 hover:text-white transition-colors">Docs</a>
         <a href="https://github.com/ts-repair/ts-repair" class="btn-secondary text-sm py-2 px-4">GitHub</a>
       </div>
     </div>
@@ -77,7 +111,7 @@ const dispositionExample = `{
   <section class="min-h-screen flex flex-col justify-center pt-20 pb-16 px-6">
     <div class="max-w-4xl mx-auto text-center">
       <div class="inline-block mb-6 px-4 py-2 rounded-full bg-repair-500/10 border border-repair-500/30 text-repair-400 text-sm font-medium">
-        Stop guessing. Start verifying.
+        Every fix verified by the TypeScript compiler
       </div>
 
       <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
@@ -90,8 +124,12 @@ const dispositionExample = `{
         before your agent sees it.
       </p>
 
+      <div class="code-block inline-block mb-8 text-left">
+        <pre><code><span class="text-gray-500">$</span> npm install -g ts-repair</code></pre>
+      </div>
+
       <div class="flex gap-4 justify-center mb-16">
-        <a href="#coming-soon" class="btn-primary">Get Started</a>
+        <a href="#quickstart" class="btn-primary">Get Started</a>
         <a href="#how-it-works" class="btn-secondary">See How It Works</a>
       </div>
 
@@ -116,8 +154,52 @@ const dispositionExample = `{
     </div>
   </section>
 
+  <!-- Quickstart Section -->
+  <section id="quickstart" class="py-24 px-6 bg-gray-900/50">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">Quickstart</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        Get verified TypeScript repairs in under a minute.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold mb-4">CLI Usage</h3>
+          <div class="space-y-4">
+            <div class="code-block">
+              <div class="text-gray-500 text-xs mb-2"># Install globally</div>
+              <pre><code>npm install -g ts-repair</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="text-gray-500 text-xs mb-2"># Get a verified repair plan</div>
+              <pre><code>ts-repair repair ./tsconfig.json</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="text-gray-500 text-xs mb-2"># Apply verified fixes automatically</div>
+              <pre><code>ts-repair repair --apply</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-4">MCP Server Setup</h3>
+          <p class="text-gray-400 text-sm mb-4">
+            Add to your agent's MCP configuration for automatic TypeScript repair integration.
+          </p>
+          <div class="code-block">
+            <div class="text-gray-500 text-xs mb-2">~/.claude/settings.json</div>
+            <pre><code set:html={claudeCodeConfig} /></pre>
+          </div>
+          <p class="text-gray-400 text-sm mt-4">
+            <a href="#agent-integration" class="text-repair-400 hover:underline">See all agent configurations &rarr;</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- The Problem Section -->
-  <section class="py-24 px-6 bg-gray-900/50">
+  <section class="py-24 px-6">
     <div class="max-w-4xl mx-auto">
       <h2 class="text-3xl font-bold mb-8 text-center">The Agent Iteration Problem</h2>
 
@@ -270,6 +352,142 @@ const dispositionExample = `{
     </div>
   </section>
 
+  <!-- CLI Reference -->
+  <section id="cli" class="py-24 px-6 bg-gray-900/50">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">CLI Reference</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        Key commands for repair planning and application.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="space-y-6">
+          <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">repair</span>
+              <span class="text-gray-400 text-sm">Primary command</span>
+            </div>
+            <div class="code-block text-sm">
+              <pre><code>ts-repair repair -p tsconfig.json
+ts-repair repair --apply
+ts-repair repair --json</code></pre>
+            </div>
+            <p class="text-gray-400 text-sm mt-3">
+              Generate a verified repair plan with optional auto-apply.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-gray-500/20 text-gray-400">plan</span>
+              <span class="text-gray-400 text-sm">Read-only planning</span>
+            </div>
+            <div class="code-block text-sm">
+              <pre><code>ts-repair plan -p tsconfig.json --format json</code></pre>
+            </div>
+            <p class="text-gray-400 text-sm mt-3">
+              Generate a repair plan without mutating the workspace.
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-gray-500/20 text-gray-400">apply</span>
+              <span class="text-gray-400 text-sm">Apply fixes</span>
+            </div>
+            <div class="code-block text-sm">
+              <pre><code>ts-repair apply -p tsconfig.json --auto
+ts-repair apply --plan plan.json</code></pre>
+            </div>
+            <p class="text-gray-400 text-sm mt-3">
+              Apply verified repairs from a plan or auto-fix low-risk issues.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-gray-500/20 text-gray-400">check</span>
+              <span class="text-gray-400 text-sm">tsc wrapper</span>
+            </div>
+            <div class="code-block text-sm">
+              <pre><code>ts-repair check -p tsconfig.json</code></pre>
+            </div>
+            <p class="text-gray-400 text-sm mt-3">
+              Equivalent to <code class="text-repair-400">tsc --noEmit</code>. Quick error count.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center">
+        <p class="text-gray-400 text-sm">
+          Scoring strategies: <code class="text-repair-400">--scoring-strategy delta</code> (default) or <code class="text-repair-400">weighted</code> for nuanced repairs.
+          <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/CLI.md" class="text-repair-400 hover:underline ml-2">Full CLI reference &rarr;</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent Integration -->
+  <section id="agent-integration" class="py-24 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">Agent Integration</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        ts-repair integrates with AI coding assistants via the Model Context Protocol (MCP).
+      </p>
+
+      <div class="mb-12">
+        <h3 class="text-xl font-semibold mb-6 text-center">MCP Tools</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
+            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_plan</span>
+            <p class="text-gray-400 text-sm mt-2">Generate a verified TypeScript repair plan</p>
+          </div>
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
+            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_apply</span>
+            <p class="text-gray-400 text-sm mt-2">Apply verified repairs to files</p>
+          </div>
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
+            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_check</span>
+            <p class="text-gray-400 text-sm mt-2">Quick check for TypeScript error count</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-semibold mb-3">Claude Code</h4>
+          <div class="code-block text-xs">
+            <div class="text-gray-500 text-xs mb-1">~/.claude/settings.json</div>
+            <pre><code set:html={claudeCodeConfig} /></pre>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-semibold mb-3">OpenCode</h4>
+          <div class="code-block text-xs">
+            <div class="text-gray-500 text-xs mb-1">opencode.json</div>
+            <pre><code set:html={openCodeConfig} /></pre>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-semibold mb-3">Codex CLI</h4>
+          <div class="code-block text-xs">
+            <div class="text-gray-500 text-xs mb-1">~/.codex/config.toml</div>
+            <pre><code set:html={codexConfig} /></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center">
+        <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/AGENT_INTEGRATION.md" class="text-repair-400 hover:underline">Full agent integration guide &rarr;</a>
+      </div>
+    </div>
+  </section>
+
   <!-- Dispositions -->
   <section id="dispositions" class="py-24 px-6 bg-gray-900/50">
     <div class="max-w-5xl mx-auto">
@@ -312,11 +530,21 @@ const dispositionExample = `{
 
           <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
             <div class="flex items-center gap-3 mb-2">
-              <span class="px-2 py-1 rounded text-xs font-mono bg-gray-500/20 text-gray-400">NoCandidate</span>
-              <span class="text-gray-400 text-sm">Semantic work</span>
+              <span class="px-2 py-1 rounded text-xs font-mono bg-gray-500/20 text-gray-400">NoGeneratedCandidate</span>
+              <span class="text-gray-400 text-sm">No fix available</span>
             </div>
             <p class="text-gray-400 text-sm">
-              No generated fix reduces diagnostics. Treat as a semantic work item requiring design decisions.
+              TypeScript has no suggested fix for this diagnostic. Manual investigation needed.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-red-500/20 text-red-400">NoVerifiedCandidate</span>
+              <span class="text-gray-400 text-sm">Root cause issue</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Fixes exist but none reduce errors. Indicates a root cause elsewhere that needs investigation.
             </p>
           </div>
         </div>
@@ -376,28 +604,31 @@ const dispositionExample = `{
     </div>
   </section>
 
-  <!-- Coming Soon Section -->
-  <section id="coming-soon" class="py-24 px-6 bg-gray-900/50">
-    <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-4">Coming Soon</h2>
-      <p class="text-gray-400 mb-8">
-        ts-repair is under active development. Star the repo to follow progress.
-      </p>
-
-      <div class="flex gap-4 justify-center">
-        <a href="https://github.com/ts-repair/ts-repair" class="btn-primary">View on GitHub</a>
-      </div>
-    </div>
-  </section>
-
   <!-- Footer -->
-  <footer class="py-12 px-6 border-t border-gray-800">
-    <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-      <div class="text-gray-500">
-        <span class="text-repair-400 font-bold">ts-repair</span> — Verified TypeScript repairs for agents
-      </div>
-      <div class="flex gap-6">
-        <a href="https://github.com/ts-repair/ts-repair" class="text-gray-400 hover:text-white transition-colors">GitHub</a>
+  <footer class="py-12 px-6 border-t border-gray-800 bg-gray-900/50">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-start gap-8">
+        <div>
+          <span class="text-repair-400 font-bold text-lg">ts-repair</span>
+          <p class="text-gray-500 text-sm mt-1">Verified TypeScript repairs for agents</p>
+        </div>
+        <div class="flex gap-12">
+          <div>
+            <div class="text-gray-400 font-semibold mb-3">Documentation</div>
+            <div class="flex flex-col gap-2">
+              <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/CLI.md" class="text-gray-500 hover:text-white transition-colors text-sm">CLI Reference</a>
+              <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/AGENT_INTEGRATION.md" class="text-gray-500 hover:text-white transition-colors text-sm">Agent Integration</a>
+              <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/ARCHITECTURE.md" class="text-gray-500 hover:text-white transition-colors text-sm">Architecture</a>
+            </div>
+          </div>
+          <div>
+            <div class="text-gray-400 font-semibold mb-3">Links</div>
+            <div class="flex flex-col gap-2">
+              <a href="https://github.com/ts-repair/ts-repair" class="text-gray-500 hover:text-white transition-colors text-sm">GitHub</a>
+              <a href="https://www.npmjs.com/package/ts-repair" class="text-gray-500 hover:text-white transition-colors text-sm">npm</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </footer>

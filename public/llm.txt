@@ -26,10 +26,89 @@ while diagnostics > 0:
   commit and repeat
 ```
 
-## Site Structure
+## Installation
 
-- Homepage: https://ts-repair.ai/
-- Documentation Hub: https://ts-repair.ai/docs/
+```bash
+npm install -g ts-repair
+```
+
+## CLI Commands
+
+```bash
+# Get a verified repair plan
+ts-repair repair ./tsconfig.json
+
+# Output as JSON for agent consumption
+ts-repair repair ./tsconfig.json --json
+
+# Apply verified fixes automatically
+ts-repair repair ./tsconfig.json --apply
+
+# Generate a plan without applying
+ts-repair plan -p tsconfig.json --format json
+
+# Apply from a saved plan
+ts-repair apply --plan plan.json
+
+# Quick error check
+ts-repair check -p tsconfig.json
+```
+
+## Scoring Strategies
+
+- `--scoring-strategy delta` (default): Simple error count difference
+- `--scoring-strategy weighted`: Considers severity, edit size, and risk
+
+## MCP Server
+
+Start the MCP server for agent integration:
+
+```bash
+ts-repair mcp-server
+```
+
+### MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `ts_repair_plan` | Generate a verified TypeScript repair plan |
+| `ts_repair_apply` | Apply verified repairs to files |
+| `ts_repair_check` | Quick check for TypeScript error count |
+
+### Agent Configuration
+
+**Claude Code** (~/.claude/settings.json):
+```json
+{
+  "mcpServers": {
+    "ts-repair": {
+      "command": "npx",
+      "args": ["ts-repair", "mcp-server"]
+    }
+  }
+}
+```
+
+**OpenCode** (opencode.json):
+```json
+{
+  "mcp": {
+    "ts-repair": {
+      "type": "local",
+      "command": ["npx", "ts-repair", "mcp-server"],
+      "enabled": true
+    }
+  }
+}
+```
+
+**Codex CLI** (~/.codex/config.toml):
+```toml
+[mcp_servers.ts-repair]
+command = "npx"
+args = ["ts-repair", "mcp-server"]
+enabled = true
+```
 
 ## Diagnostic Dispositions
 
@@ -38,25 +117,10 @@ After verification, each remaining diagnostic is classified:
 | Disposition | Meaning | Agent Action |
 |-------------|---------|--------------|
 | **AutoFixable** | Verified fix exists, low risk | Apply automatically |
-| **AutoFixableHighRisk** | Verified fix exists, semantic risk | Opt-in apply |
-| **NeedsJudgment** | Multiple valid fixes | Surface to LLM for decision |
-| **NoCandidate** | No fix helps | Treat as semantic work |
-
-## Installation
-
-```bash
-# Install ts-repair
-npm install -g ts-repair
-
-# Get a verified repair plan
-ts-repair repair ./tsconfig.json
-
-# Output as JSON for agent consumption
-ts-repair repair ./tsconfig.json --json
-
-# Apply AutoFixable repairs automatically
-ts-repair repair ./tsconfig.json --apply
-```
+| **AutoFixableHighRisk** | Verified fix exists, semantic risk | Ask before applying |
+| **NeedsJudgment** | Multiple valid fixes | Present options to user |
+| **NoGeneratedCandidate** | No TypeScript fix available | Manual investigation needed |
+| **NoVerifiedCandidate** | Fixes exist but none reduce errors | Root cause investigation needed |
 
 ## Programmatic API
 
@@ -82,10 +146,19 @@ for (const step of plan.steps) {
 - **Monotonic Progress**: Each committed fix reduces the diagnostic count
 - **Deterministic Output**: Same input yields the same repair plan
 
+## Site Structure
+
+- Homepage: https://ts-repair.ai/
+
+## Documentation
+
+- CLI Reference: https://github.com/ts-repair/ts-repair/blob/main/docs/CLI.md
+- Agent Integration: https://github.com/ts-repair/ts-repair/blob/main/docs/AGENT_INTEGRATION.md
+- Architecture: https://github.com/ts-repair/ts-repair/blob/main/docs/ARCHITECTURE.md
+
 ## Related Repositories
 
 - Repair Engine: https://github.com/ts-repair/ts-repair
-- Agent Skill: https://github.com/ts-repair/skill
 - Website: https://github.com/ts-repair/ts-repair.github.io
 
 ## Contact
