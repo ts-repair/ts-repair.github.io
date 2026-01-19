@@ -118,10 +118,14 @@ enabled = <span class="json-number">true</span>`;
         Verified TypeScript<br/>Repairs for Agents
       </h1>
 
-      <p class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+      <p class="text-xl text-gray-400 mb-6 max-w-2xl mx-auto leading-relaxed">
         ts-repair is an oracle-guided repair engine that turns TypeScript diagnostics into
         <strong class="text-white">verified repair plans</strong>. Every fix is proven to reduce errors
         before your agent sees it.
+      </p>
+
+      <p class="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed border-l-2 border-repair-500/50 pl-4 text-left">
+        ts-repair collapses the compile&ndash;fix iteration loop by using the TypeScript compiler as a verification oracle, producing verified fixes up front instead of heuristic guesses.
       </p>
 
       <div class="code-block inline-block mb-8 text-left">
@@ -198,6 +202,78 @@ enabled = <span class="json-number">true</span>`;
     </div>
   </section>
 
+  <!-- Fix Scope Section -->
+  <section class="py-24 px-6">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">What ts-repair Fixes (and What It Doesn't)</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        ts-repair is optimized for high-fan-out root-cause errors that generate large diagnostic cascades.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="p-6 rounded-xl bg-gray-900 border border-repair-500/30">
+          <div class="text-repair-400 text-lg font-semibold mb-4">Covered well</div>
+          <ul class="space-y-3 text-gray-400">
+            <li class="flex gap-3">
+              <span class="text-repair-400">&#x2713;</span>
+              <span>Import and export typos</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-repair-400">&#x2713;</span>
+              <span>Incorrect file paths</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-repair-400">&#x2713;</span>
+              <span>Missing <code class="text-repair-400">async</code> / <code class="text-repair-400">await</code></span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-repair-400">&#x2713;</span>
+              <span>Simple type mismatches</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-repair-400">&#x2713;</span>
+              <span>Trivial refactor fallout (renamed symbols, moved files)</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="text-gray-400 text-lg font-semibold mb-4">Out of scope</div>
+          <ul class="space-y-3 text-gray-400">
+            <li class="flex gap-3">
+              <span class="text-gray-500">&mdash;</span>
+              <span>Semantic redesigns</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-gray-500">&mdash;</span>
+              <span>Domain-specific logic fixes</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-gray-500">&mdash;</span>
+              <span>Speculative API changes</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-gray-500">&mdash;</span>
+              <span>Architectural refactors</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How Verification Works (Early Summary) -->
+  <section class="py-16 px-6 bg-gray-900/50">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-2xl font-bold mb-6">Speculative Verification</h2>
+      <p class="text-lg text-gray-400 leading-relaxed">
+        Instead of guessing and recompiling, ts-repair speculatively applies candidate fixes
+        <strong class="text-white">in memory</strong> and uses the TypeScript checker to verify that each one
+        <strong class="text-white">strictly reduces the error set</strong>. Only verified fixes are surfaced.
+      </p>
+    </div>
+  </section>
+
   <!-- The Problem Section -->
   <section class="py-24 px-6">
     <div class="max-w-4xl mx-auto">
@@ -251,21 +327,79 @@ enabled = <span class="json-number">true</span>`;
     </div>
   </section>
 
-  <!-- Key Insight -->
-  <section class="py-24 px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-6">The Key Insight</h2>
-      <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-        Instead of giving agents raw errors and hoping they fix them, ts-repair
-        <strong class="text-white">speculatively applies every candidate fix</strong>,
-        re-runs the type checker, and
-        <strong class="text-white">only surfaces fixes that provably reduce errors</strong>.
+  <!-- Disposition Categories Summary (Compact) -->
+  <section class="py-16 px-6 bg-gray-900/50">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold mb-4 text-center">Explicit Uncertainty</h2>
+      <p class="text-gray-400 text-center mb-8 max-w-2xl mx-auto">
+        ts-repair classifies each diagnostic by disposition, surfacing uncertainty explicitly. It never silently applies unsafe fixes.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-3 mb-6">
+        <span class="px-3 py-1.5 rounded text-xs font-mono bg-repair-500/20 text-repair-400 border border-repair-500/30">AutoFixable</span>
+        <span class="px-3 py-1.5 rounded text-xs font-mono bg-amber-500/20 text-amber-400 border border-amber-500/30">AutoFixableHighRisk</span>
+        <span class="px-3 py-1.5 rounded text-xs font-mono bg-purple-500/20 text-purple-400 border border-purple-500/30">NeedsJudgment</span>
+        <span class="px-3 py-1.5 rounded text-xs font-mono bg-gray-500/20 text-gray-400 border border-gray-500/30">NoGeneratedCandidate</span>
+        <span class="px-3 py-1.5 rounded text-xs font-mono bg-red-500/20 text-red-400 border border-red-500/30">NoVerifiedCandidate</span>
+      </div>
+
+      <p class="text-gray-500 text-sm text-center">
+        <a href="#dispositions" class="text-repair-400 hover:underline">See full disposition details &rarr;</a>
       </p>
     </div>
   </section>
 
+  <!-- Comparison Table -->
+  <section class="py-24 px-6">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">ts-repair vs. Existing Auto-Fix Tools</h2>
+      <p class="text-gray-400 text-center mb-8 max-w-2xl mx-auto">
+        ts-repair is not a wrapper around existing TypeScript codefixes. It uses speculative verification and ranking to provide guarantees that heuristic tools cannot.
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-gray-700">
+              <th class="py-3 px-4 text-gray-300 font-semibold">Feature</th>
+              <th class="py-3 px-4 text-repair-400 font-semibold text-center">ts-repair</th>
+              <th class="py-3 px-4 text-gray-400 font-semibold text-center">TS Codefix-Only Tools</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-400">
+            <tr class="border-b border-gray-800">
+              <td class="py-3 px-4">Verified reduction of errors</td>
+              <td class="py-3 px-4 text-center text-repair-400">&#x2713;</td>
+              <td class="py-3 px-4 text-center text-red-400">&#x2717;</td>
+            </tr>
+            <tr class="border-b border-gray-800">
+              <td class="py-3 px-4">Monotonic progress guarantee</td>
+              <td class="py-3 px-4 text-center text-repair-400">&#x2713;</td>
+              <td class="py-3 px-4 text-center text-red-400">&#x2717;</td>
+            </tr>
+            <tr class="border-b border-gray-800">
+              <td class="py-3 px-4">Heuristic / speculative fixes</td>
+              <td class="py-3 px-4 text-center text-repair-400">&#x2717;</td>
+              <td class="py-3 px-4 text-center text-red-400">&#x2713;</td>
+            </tr>
+            <tr class="border-b border-gray-800">
+              <td class="py-3 px-4">Agent-first design</td>
+              <td class="py-3 px-4 text-center text-repair-400">&#x2713;</td>
+              <td class="py-3 px-4 text-center text-red-400">&#x2717;</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4">Single-pass repair planning</td>
+              <td class="py-3 px-4 text-center text-repair-400">&#x2713;</td>
+              <td class="py-3 px-4 text-center text-red-400">&#x2717;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- Early Benchmark Results -->
-  <section class="py-24 px-6 bg-gray-900/50">
+  <section class="py-24 px-6">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">Early Benchmark Results</h2>
       <p class="text-gray-400 text-center mb-8 max-w-2xl mx-auto">
@@ -273,10 +407,23 @@ enabled = <span class="json-number">true</span>`;
       </p>
 
       <!-- Caveat Banner -->
-      <div class="mb-10 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30 text-center">
+      <div class="mb-8 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30 text-center">
         <p class="text-amber-400 text-sm">
           <strong>Early results from a single benchmark.</strong> We seeded 206 type errors into Zod v4 and measured Claude Code's repair process. Results will vary by project complexity and error types.
           <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/benchmarking/zod-benchmark-01.md" class="underline hover:text-amber-300 ml-1">Full methodology &rarr;</a>
+        </p>
+      </div>
+
+      <!-- Framing Paragraph -->
+      <div class="mb-10 p-5 rounded-lg bg-gray-900 border border-gray-800">
+        <p class="text-gray-400 text-sm leading-relaxed mb-3">
+          <strong class="text-white">Why typo-style root causes matter:</strong> A single mistyped import or renamed symbol can cascade into dozens or hundreds of downstream diagnostics. These high-fan-out errors are common after refactors, dependency updates, and code generation &mdash; exactly when agents need help most.
+        </p>
+        <p class="text-gray-400 text-sm leading-relaxed mb-3">
+          <strong class="text-white">The dominant cost driver</strong> in agent-assisted repair is repeated context re-ingestion: each compile&ndash;check&ndash;fix cycle forces the agent to re-read error output, re-analyze, and re-plan. ts-repair's efficiency gain comes from <strong class="text-white">collapsing six verification rounds into one</strong>.
+        </p>
+        <p class="text-gray-500 text-sm italic">
+          This benchmark demonstrates the type of efficiency gain made possible by eliminating redundant compile cycles; absolute results vary by workload.
         </p>
       </div>
 
@@ -285,37 +432,57 @@ enabled = <span class="json-number">true</span>`;
         <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
           <div class="text-4xl font-bold text-repair-400 mb-2">52%</div>
           <div class="text-gray-400 text-sm mb-1">Cost Reduction</div>
-          <div class="text-gray-500 text-xs">$2.55 → $1.23</div>
+          <div class="text-gray-500 text-xs">$2.55 &rarr; $1.23</div>
         </div>
 
         <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
           <div class="text-4xl font-bold text-repair-400 mb-2">63%</div>
           <div class="text-gray-400 text-sm mb-1">Fewer Tokens</div>
-          <div class="text-gray-500 text-xs">3.58M → 1.32M input</div>
+          <div class="text-gray-500 text-xs">3.58M &rarr; 1.32M input</div>
         </div>
 
         <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
           <div class="text-4xl font-bold text-repair-400 mb-2">32%</div>
           <div class="text-gray-400 text-sm mb-1">Faster</div>
-          <div class="text-gray-500 text-xs">13m 23s → 9m 6s</div>
+          <div class="text-gray-500 text-xs">13m 23s &rarr; 9m 6s</div>
         </div>
 
         <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
-          <div class="text-4xl font-bold text-repair-400 mb-2">6→1</div>
+          <div class="text-4xl font-bold text-repair-400 mb-2">6&rarr;1</div>
           <div class="text-gray-400 text-sm mb-1">Repair Rounds</div>
           <div class="text-gray-500 text-xs">Compile-check-fix cycles</div>
         </div>
       </div>
 
       <!-- Secondary stat -->
-      <div class="text-center text-gray-400 text-sm">
-        <span class="text-repair-400 font-semibold">67% fewer bash commands</span> (27 → 9) &mdash; less compile-check-fix churn
+      <div class="text-center text-gray-400 text-sm mb-8">
+        <span class="text-repair-400 font-semibold">67% fewer bash commands</span> (27 &rarr; 9) &mdash; less compile-check-fix churn
+      </div>
+
+      <!-- Future Benchmarks Note -->
+      <div class="text-center text-gray-500 text-sm border-t border-gray-800 pt-6">
+        <strong class="text-gray-400">What's next:</strong> We're building an automated benchmark harness for cross-project testing (React, Express, etc.) and non-typo workloads (generic constraints, inference failures, overloads).
       </div>
     </div>
   </section>
 
+  <!-- Not Guesswork Section -->
+  <section class="py-16 px-6 bg-gray-900/50">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-2xl font-bold mb-6">Not Guesswork. Not AI Hallucinations.</h2>
+      <p class="text-lg text-gray-400 leading-relaxed mb-4">
+        ts-repair does not invent fixes. It does not use LLMs to generate code.
+      </p>
+      <p class="text-gray-400 leading-relaxed">
+        Every fix is verified by the TypeScript compiler. Fixes are only surfaced if they
+        <strong class="text-white">strictly reduce the error set</strong>. If a candidate fix
+        introduces new errors or fails to resolve any, it is discarded &mdash; never presented to the agent.
+      </p>
+    </div>
+  </section>
+
   <!-- How It Works -->
-  <section id="how-it-works" class="py-24 px-6 bg-gray-900/50">
+  <section id="how-it-works" class="py-24 px-6">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">How It Works</h2>
       <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
