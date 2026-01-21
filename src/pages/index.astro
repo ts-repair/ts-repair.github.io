@@ -69,7 +69,7 @@ const dispositionExample = `{
 const claudeCodeConfig = `{
   <span class="json-key">"mcpServers"</span>: {
     <span class="json-key">"ts-repair"</span>: {
-      <span class="json-key">"command"</span>: <span class="json-string">"npx"</span>,
+      <span class="json-key">"command"</span>: <span class="json-string">"bunx"</span>,
       <span class="json-key">"args"</span>: [<span class="json-string">"ts-repair"</span>, <span class="json-string">"mcp-server"</span>]
     }
   }
@@ -79,16 +79,46 @@ const openCodeConfig = `{
   <span class="json-key">"mcp"</span>: {
     <span class="json-key">"ts-repair"</span>: {
       <span class="json-key">"type"</span>: <span class="json-string">"local"</span>,
-      <span class="json-key">"command"</span>: [<span class="json-string">"npx"</span>, <span class="json-string">"ts-repair"</span>, <span class="json-string">"mcp-server"</span>],
+      <span class="json-key">"command"</span>: [<span class="json-string">"bunx"</span>, <span class="json-string">"ts-repair"</span>, <span class="json-string">"mcp-server"</span>],
       <span class="json-key">"enabled"</span>: <span class="json-number">true</span>
     }
   }
 }`;
 
 const codexConfig = `<span class="text-gray-500">[mcp_servers.ts-repair]</span>
-command = <span class="json-string">"npx"</span>
+command = <span class="json-string">"bunx"</span>
 args = [<span class="json-string">"ts-repair"</span>, <span class="json-string">"mcp-server"</span>]
 enabled = <span class="json-number">true</span>`;
+
+// Programmatic API example
+const programmaticApiExample = `<span class="text-purple-400">import</span> { repair } <span class="text-purple-400">from</span> <span class="json-string">'ts-repair'</span>;
+
+<span class="text-purple-400">const</span> plan = <span class="text-purple-400">await</span> repair({
+  project: <span class="json-string">'./tsconfig.json'</span>,
+  maxCandidates: <span class="json-number">10</span>,
+  maxVerifications: <span class="json-number">500</span>,
+});
+
+console.log(\`\${plan.initialErrors} → \${plan.finalErrors} errors\`);
+
+<span class="text-purple-400">for</span> (<span class="text-purple-400">const</span> step <span class="text-purple-400">of</span> plan.steps) {
+  console.log(\`Apply: \${step.fixDescription}\`);
+}`;
+
+// Configuration options example
+const configOptionsExample = `<span class="text-purple-400">await</span> repair({
+  project: <span class="json-string">'./tsconfig.json'</span>,
+  <span class="text-gray-500">// Max candidates per diagnostic</span>
+  maxCandidates: <span class="json-number">10</span>,
+  <span class="text-gray-500">// Max candidates per iteration</span>
+  maxCandidatesPerIteration: <span class="json-number">100</span>,
+  <span class="text-gray-500">// Verification budget</span>
+  maxVerifications: <span class="json-number">500</span>,
+  <span class="text-gray-500">// Include high-risk fixes (type assertions)</span>
+  includeHighRisk: <span class="json-number">false</span>,
+  <span class="text-gray-500">// Scoring: 'delta' or 'weighted'</span>
+  scoringStrategy: <span class="json-string">'delta'</span>,
+});`;
 
 ---
 
@@ -97,10 +127,11 @@ enabled = <span class="json-number">true</span>`;
   <nav class="fixed top-0 w-full z-50 bg-gray-950/80 backdrop-blur-md border-b border-gray-800">
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
       <a href="./" class="text-xl font-bold text-repair-400">ts-repair</a>
-      <div class="flex gap-3 md:gap-6 items-center">
+<div class="flex gap-3 md:gap-6 items-center">
         <a href="#quickstart" class="hidden sm:block text-gray-400 hover:text-white transition-colors text-sm md:text-base">Quickstart</a>
-        <a href="#cli" class="hidden sm:block text-gray-400 hover:text-white transition-colors text-sm md:text-base">CLI</a>
-        <a href="#agent-integration" class="hidden md:block text-gray-400 hover:text-white transition-colors">Agents</a>
+        <a href="#agent-integration" class="hidden sm:block text-gray-400 hover:text-white transition-colors text-sm md:text-base">Agents</a>
+        <a href="#cli" class="hidden md:block text-gray-400 hover:text-white transition-colors">CLI</a>
+        <a href="#api" class="hidden md:block text-gray-400 hover:text-white transition-colors">API</a>
         <a href="https://github.com/ts-repair/ts-repair/tree/main/docs" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Docs</a>
         <a href="https://github.com/ts-repair/ts-repair" class="btn-secondary text-sm py-2 px-3 md:px-4">GitHub</a>
       </div>
@@ -254,12 +285,104 @@ enabled = <span class="json-number">true</span>`;
   <!-- Key Insight -->
   <section class="py-16 md:py-24 px-4 md:px-6">
     <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-6">The Key Insight</h2>
-      <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+      <h2 class="text-3xl font-bold mb-6">The TypeScript Compiler is the Oracle</h2>
+      <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8">
         Instead of giving agents raw errors and hoping they fix them, ts-repair
         <strong class="text-white">speculatively applies every candidate fix</strong>,
         re-runs the type checker, and
         <strong class="text-white">only surfaces fixes that provably reduce errors</strong>.
+      </p>
+      <p class="text-gray-500 max-w-2xl mx-auto">
+        No heuristics. No LLM guessing. The actual type checker that will judge your code
+        is the same one verifying the fixes. That's why every fix in a repair plan is guaranteed to help.
+      </p>
+    </div>
+  </section>
+
+  <!-- What Gets Fixed -->
+  <section class="py-24 px-6 bg-gray-900/50">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">What Gets Fixed Automatically</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        ts-repair verifies which TypeScript fixes actually help and rejects those that introduce new errors.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-repair-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            </span>
+            <span class="font-semibold">Missing Imports</span>
+          </div>
+          <p class="text-gray-400 text-sm">Auto-add imports for undefined symbols from your project or dependencies.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-repair-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+            <span class="font-semibold">Async/Await</span>
+          </div>
+          <p class="text-gray-400 text-sm">Add missing <code class="text-repair-400">async</code> or <code class="text-repair-400">await</code> modifiers to functions and calls.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-repair-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </span>
+            <span class="font-semibold">Spelling Fixes</span>
+          </div>
+          <p class="text-gray-400 text-sm">Rename misspelled identifiers to matching names in scope.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-repair-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </span>
+            <span class="font-semibold">Missing Properties</span>
+          </div>
+          <p class="text-gray-400 text-sm">Add missing properties to objects and interfaces.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-repair-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+              </svg>
+            </span>
+            <span class="font-semibold">Remove Unused</span>
+          </div>
+          <p class="text-gray-400 text-sm">Clean up unused imports, variables, and parameters.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-repair-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </span>
+            <span class="font-semibold">ESM Extensions</span>
+          </div>
+          <p class="text-gray-400 text-sm">Add <code class="text-repair-400">.js</code> extensions to module imports for ESM compatibility.</p>
+        </div>
+      </div>
+
+      <p class="text-gray-500 text-sm text-center mt-8">
+        Plus ~73 other fix types from TypeScript's Language Service, each verified before being surfaced.
       </p>
     </div>
   </section>
@@ -350,7 +473,7 @@ enabled = <span class="json-number">true</span>`;
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-12 text-center">Architecture</h2>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
         <div class="p-4 md:p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
           <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-3 md:mb-4 mx-auto">
             <svg class="w-5 h-5 md:w-6 md:h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,7 +509,9 @@ enabled = <span class="json-number">true</span>`;
             Greedy selection with solver fallback for conflicts
           </p>
         </div>
+      </div>
 
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         <div class="p-4 md:p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
           <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-3 md:mb-4 mx-auto">
             <svg class="w-5 h-5 md:w-6 md:h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -398,12 +523,211 @@ enabled = <span class="json-number">true</span>`;
             Labels each diagnostic by disposition
           </p>
         </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="font-semibold mb-2">Verification Cone</h3>
+          <p class="text-gray-400 text-sm">
+            Smart scope management keeps verification bounded for structural edits
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <h3 class="font-semibold mb-2">Memory Guards</h3>
+          <p class="text-gray-400 text-sm">
+            Production-ready with telemetry and resource management
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- Dispositions -->
+  <section id="dispositions" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">Diagnostic Dispositions</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        After verification, each remaining diagnostic is classified so agents know exactly what to do.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-12 items-start">
+        <div class="space-y-4">
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">AutoFixable</span>
+              <span class="text-gray-400 text-sm">Low risk</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Verified fix exists and is safe to auto-apply. Add imports, fix typos, add async/await.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-amber-500/20 text-amber-400">AutoFixableHighRisk</span>
+              <span class="text-gray-400 text-sm">Semantic risk</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Verified fix exists but involves type assertions or coercions. Opt-in to apply.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-purple-500/20 text-purple-400">NeedsJudgment</span>
+              <span class="text-gray-400 text-sm">Multiple options</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Multiple verified fixes with comparable scores. Surface ranked options to the agent or human.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-gray-500/20 text-gray-400">NoGeneratedCandidate</span>
+              <span class="text-gray-400 text-sm">No fix available</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              TypeScript has no suggested fix for this diagnostic. Manual investigation needed.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 rounded text-xs font-mono bg-red-500/20 text-red-400">NoVerifiedCandidate</span>
+              <span class="text-gray-400 text-sm">Root cause issue</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Fixes exist but none reduce errors. Indicates a root cause elsewhere that needs investigation.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Example Output</h3>
+          <div class="code-block">
+            <pre><code set:html={dispositionExample} /></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- Guarantees -->
+  <section class="py-16 md:py-24 px-4 md:px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-12">Guarantees</h2>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Verified Fixes</h3>
+          <p class="text-gray-400 text-sm">
+            Every fix in the plan is proven by the TypeScript compiler to reduce errors. No heuristics.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Monotonic Progress</h3>
+          <p class="text-gray-400 text-sm">
+            Each committed fix reduces the diagnostic count. No fix that introduces more errors than it resolves.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Deterministic Output</h3>
+          <p class="text-gray-400 text-sm">
+            Same input yields the same repair plan. No randomness, no heuristics that vary by run.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent Integration -->
+  <section id="agent-integration" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">Agent Integration</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        ts-repair integrates with AI coding assistants via the Model Context Protocol (MCP).
+      </p>
+
+      <div class="mb-12">
+        <h3 class="text-xl font-semibold mb-6 text-center">MCP Tools</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
+            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_plan</span>
+            <p class="text-gray-400 text-sm mt-2">Generate a verified TypeScript repair plan</p>
+          </div>
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
+            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_apply</span>
+            <p class="text-gray-400 text-sm mt-2">Apply verified repairs to files</p>
+          </div>
+          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
+            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_check</span>
+            <p class="text-gray-400 text-sm mt-2">Quick check for TypeScript error count</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-semibold mb-3">Claude Code</h4>
+          <div class="code-block text-xs">
+            <div class="text-gray-500 text-xs mb-1">~/.claude/settings.json</div>
+            <pre><code set:html={claudeCodeConfig} /></pre>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-semibold mb-3">OpenCode</h4>
+          <div class="code-block text-xs">
+            <div class="text-gray-500 text-xs mb-1">opencode.json</div>
+            <pre><code set:html={openCodeConfig} /></pre>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-semibold mb-3">Codex CLI</h4>
+          <div class="code-block text-xs">
+            <div class="text-gray-500 text-xs mb-1">~/.codex/config.toml</div>
+            <pre><code set:html={codexConfig} /></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center">
+        <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/AGENT_INTEGRATION.md" class="text-repair-400 hover:underline">Full agent integration guide &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+
   <!-- CLI Reference -->
-  <section id="cli" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
+  <section id="cli" class="py-16 md:py-24 px-4 md:px-6">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">CLI Reference</h2>
       <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
@@ -480,176 +804,86 @@ ts-repair apply --plan plan.json</code></pre>
     </div>
   </section>
 
-  <!-- Agent Integration -->
-  <section id="agent-integration" class="py-16 md:py-24 px-4 md:px-6">
+  <!-- Programmatic API -->
+  <section id="api" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
     <div class="max-w-5xl mx-auto">
-      <h2 class="text-3xl font-bold mb-4 text-center">Agent Integration</h2>
+      <h2 class="text-3xl font-bold mb-4 text-center">Programmatic API</h2>
       <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
-        ts-repair integrates with AI coding assistants via the Model Context Protocol (MCP).
+        Integrate ts-repair directly into your tooling, CI pipelines, or custom workflows.
       </p>
 
-      <div class="mb-12">
-        <h3 class="text-xl font-semibold mb-6 text-center">MCP Tools</h3>
-        <div class="grid md:grid-cols-3 gap-6">
-          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
-            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_plan</span>
-            <p class="text-gray-400 text-sm mt-2">Generate a verified TypeScript repair plan</p>
-          </div>
-          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
-            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_apply</span>
-            <p class="text-gray-400 text-sm mt-2">Apply verified repairs to files</p>
-          </div>
-          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 text-center">
-            <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">ts_repair_check</span>
-            <p class="text-gray-400 text-sm mt-2">Quick check for TypeScript error count</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-6">
-        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
-          <h4 class="font-semibold mb-3">Claude Code</h4>
-          <div class="code-block text-xs">
-            <div class="text-gray-500 text-xs mb-1">~/.claude/settings.json</div>
-            <pre><code set:html={claudeCodeConfig} /></pre>
-          </div>
-        </div>
-
-        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
-          <h4 class="font-semibold mb-3">OpenCode</h4>
-          <div class="code-block text-xs">
-            <div class="text-gray-500 text-xs mb-1">opencode.json</div>
-            <pre><code set:html={openCodeConfig} /></pre>
-          </div>
-        </div>
-
-        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
-          <h4 class="font-semibold mb-3">Codex CLI</h4>
-          <div class="code-block text-xs">
-            <div class="text-gray-500 text-xs mb-1">~/.codex/config.toml</div>
-            <pre><code set:html={codexConfig} /></pre>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-8 text-center">
-        <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/AGENT_INTEGRATION.md" class="text-repair-400 hover:underline">Full agent integration guide &rarr;</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dispositions -->
-  <section id="dispositions" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
-    <div class="max-w-5xl mx-auto">
-      <h2 class="text-3xl font-bold mb-4 text-center">Diagnostic Dispositions</h2>
-      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
-        After verification, each remaining diagnostic is classified so agents know exactly what to do.
-      </p>
-
-      <div class="grid md:grid-cols-2 gap-12 items-start">
-        <div class="space-y-4">
-          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="px-2 py-1 rounded text-xs font-mono bg-repair-500/20 text-repair-400">AutoFixable</span>
-              <span class="text-gray-400 text-sm">Low risk</span>
-            </div>
-            <p class="text-gray-400 text-sm">
-              Verified fix exists and is safe to auto-apply. Add imports, fix typos, add async/await.
-            </p>
-          </div>
-
-          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="px-2 py-1 rounded text-xs font-mono bg-amber-500/20 text-amber-400">AutoFixableHighRisk</span>
-              <span class="text-gray-400 text-sm">Semantic risk</span>
-            </div>
-            <p class="text-gray-400 text-sm">
-              Verified fix exists but involves type assertions or coercions. Opt-in to apply.
-            </p>
-          </div>
-
-          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="px-2 py-1 rounded text-xs font-mono bg-purple-500/20 text-purple-400">NeedsJudgment</span>
-              <span class="text-gray-400 text-sm">Multiple options</span>
-            </div>
-            <p class="text-gray-400 text-sm">
-              Multiple verified fixes with comparable scores. Surface ranked options to the agent or human.
-            </p>
-          </div>
-
-          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="px-2 py-1 rounded text-xs font-mono bg-gray-500/20 text-gray-400">NoGeneratedCandidate</span>
-              <span class="text-gray-400 text-sm">No fix available</span>
-            </div>
-            <p class="text-gray-400 text-sm">
-              TypeScript has no suggested fix for this diagnostic. Manual investigation needed.
-            </p>
-          </div>
-
-          <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="px-2 py-1 rounded text-xs font-mono bg-red-500/20 text-red-400">NoVerifiedCandidate</span>
-              <span class="text-gray-400 text-sm">Root cause issue</span>
-            </div>
-            <p class="text-gray-400 text-sm">
-              Fixes exist but none reduce errors. Indicates a root cause elsewhere that needs investigation.
-            </p>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold mb-4">Basic Usage</h3>
+          <div class="code-block">
+            <pre><code set:html={programmaticApiExample} /></pre>
           </div>
         </div>
 
         <div>
-          <h3 class="text-lg font-semibold mb-4">Example Output</h3>
+          <h3 class="text-xl font-semibold mb-4">Configuration Options</h3>
           <div class="code-block">
-            <pre><code set:html={dispositionExample} /></pre>
+            <pre><code set:html={configOptionsExample} /></pre>
+          </div>
+          <div class="mt-4 space-y-2 text-sm text-gray-400">
+            <p><code class="text-repair-400">maxCandidates</code> — Limit candidates per diagnostic</p>
+            <p><code class="text-repair-400">maxVerifications</code> — Total verification budget</p>
+            <p><code class="text-repair-400">includeHighRisk</code> — Include type assertions (opt-in)</p>
+            <p><code class="text-repair-400">scoringStrategy</code> — <code>'delta'</code> or <code>'weighted'</code></p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Guarantees -->
-  <section class="py-16 md:py-24 px-4 md:px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-12">Guarantees</h2>
+  <!-- What's Next -->
+  <section class="py-24 px-6 bg-gray-900/50">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-center">What's Next</h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        ts-repair is under active development for TypeScript. Here's what's on the roadmap.
+      </p>
 
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
-          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
-            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </span>
+            <span class="font-semibold">Multi-Language</span>
           </div>
-          <h3 class="text-lg font-semibold mb-2">Verified Fixes</h3>
-          <p class="text-gray-400 text-sm">
-            Every fix in the plan is proven by the TypeScript compiler to reduce errors. No heuristics.
-          </p>
+          <p class="text-gray-400 text-sm">Rust, Go, and Python support using the same oracle-guided approach.</p>
         </div>
 
-        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
-          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
-            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </span>
+            <span class="font-semibold">Protocol Spec</span>
           </div>
-          <h3 class="text-lg font-semibold mb-2">Monotonic Progress</h3>
-          <p class="text-gray-400 text-sm">
-            Each committed fix reduces the diagnostic count. No fix that introduces more errors than it resolves.
-          </p>
+          <p class="text-gray-400 text-sm">Formal specification for language-agnostic repair integration.</p>
         </div>
 
-        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
-          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
-            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </span>
+            <span class="font-semibold">Weight Learning</span>
           </div>
-          <h3 class="text-lg font-semibold mb-2">Deterministic Output</h3>
-          <p class="text-gray-400 text-sm">
-            Same input yields the same repair plan. No randomness, no heuristics that vary by run.
-          </p>
+          <p class="text-gray-400 text-sm">Learn scoring weights from historical fix success data.</p>
         </div>
+      </div>
+
+      <div class="mt-8 text-center">
+        <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/ROADMAP.md" class="text-repair-400 hover:underline">Full roadmap &rarr;</a>
       </div>
     </div>
   </section>
