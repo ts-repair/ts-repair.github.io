@@ -95,30 +95,30 @@ enabled = <span class="json-number">true</span>`;
 <Layout title="ts-repair - Verified TypeScript Repairs for Agents">
   <!-- Navigation -->
   <nav class="fixed top-0 w-full z-50 bg-gray-950/80 backdrop-blur-md border-b border-gray-800">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
       <a href="./" class="text-xl font-bold text-repair-400">ts-repair</a>
-      <div class="flex gap-6 items-center">
-        <a href="#quickstart" class="text-gray-400 hover:text-white transition-colors">Quickstart</a>
-        <a href="#cli" class="text-gray-400 hover:text-white transition-colors">CLI</a>
-        <a href="#agent-integration" class="text-gray-400 hover:text-white transition-colors">Agents</a>
-        <a href="https://github.com/ts-repair/ts-repair/tree/main/docs" class="text-gray-400 hover:text-white transition-colors">Docs</a>
-        <a href="https://github.com/ts-repair/ts-repair" class="btn-secondary text-sm py-2 px-4">GitHub</a>
+      <div class="flex gap-3 md:gap-6 items-center">
+        <a href="#quickstart" class="hidden sm:block text-gray-400 hover:text-white transition-colors text-sm md:text-base">Quickstart</a>
+        <a href="#cli" class="hidden sm:block text-gray-400 hover:text-white transition-colors text-sm md:text-base">CLI</a>
+        <a href="#agent-integration" class="hidden md:block text-gray-400 hover:text-white transition-colors">Agents</a>
+        <a href="https://github.com/ts-repair/ts-repair/tree/main/docs" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Docs</a>
+        <a href="https://github.com/ts-repair/ts-repair" class="btn-secondary text-sm py-2 px-3 md:px-4">GitHub</a>
       </div>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <section class="min-h-screen flex flex-col justify-center pt-20 pb-16 px-6">
+  <section class="min-h-screen flex flex-col justify-center pt-20 pb-16 px-4 md:px-6">
     <div class="max-w-4xl mx-auto text-center">
-      <div class="inline-block mb-6 px-4 py-2 rounded-full bg-repair-500/10 border border-repair-500/30 text-repair-400 text-sm font-medium">
+      <div class="inline-block mb-6 px-3 md:px-4 py-2 rounded-full bg-repair-500/10 border border-repair-500/30 text-repair-400 text-xs md:text-sm font-medium">
         Every fix verified by the TypeScript compiler
       </div>
 
-      <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+      <h1 class="text-4xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent leading-tight">
         Verified TypeScript<br/>Repairs for Agents
       </h1>
 
-      <p class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+      <p class="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
         ts-repair is an oracle-guided repair engine that turns TypeScript diagnostics into
         <strong class="text-white">verified repair plans</strong>. Every fix is proven to reduce errors
         before your agent sees it.
@@ -128,26 +128,26 @@ enabled = <span class="json-number">true</span>`;
         <pre><code><span class="text-gray-500">$</span> npm install -g ts-repair</code></pre>
       </div>
 
-      <div class="flex gap-4 justify-center mb-16">
+      <div class="flex gap-3 md:gap-4 justify-center mb-12 md:mb-16">
         <a href="#quickstart" class="btn-primary">Get Started</a>
-        <a href="#how-it-works" class="btn-secondary">See How It Works</a>
+        <a href="#how-it-works" class="btn-secondary">How It Works</a>
       </div>
 
       <!-- Quick visual of the loop -->
-      <div class="flex items-center justify-center gap-4 text-gray-500 flex-wrap">
-        <div class="px-4 py-2 rounded bg-gray-900 border border-gray-800 font-mono text-sm">
+      <div class="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 text-gray-500">
+        <div class="px-3 md:px-4 py-2 rounded bg-gray-900 border border-gray-800 font-mono text-xs md:text-sm">
           TypeScript errors
         </div>
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 md:w-6 md:h-6 rotate-90 md:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
         </svg>
-        <div class="px-4 py-2 rounded bg-gray-900 border border-gray-800 font-mono text-sm">
+        <div class="px-3 md:px-4 py-2 rounded bg-gray-900 border border-gray-800 font-mono text-xs md:text-sm">
           ts-repair verifies fixes
         </div>
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 md:w-6 md:h-6 rotate-90 md:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
         </svg>
-        <div class="px-4 py-2 rounded bg-repair-500/20 border border-repair-500/30 text-repair-400 font-mono text-sm">
+        <div class="px-3 md:px-4 py-2 rounded bg-repair-500/20 border border-repair-500/30 text-repair-400 font-mono text-xs md:text-sm">
           Verified repair plan
         </div>
       </div>
@@ -155,7 +155,7 @@ enabled = <span class="json-number">true</span>`;
   </section>
 
   <!-- Quickstart Section -->
-  <section id="quickstart" class="py-24 px-6 bg-gray-900/50">
+  <section id="quickstart" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
     <div class="max-w-4xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">Quickstart</h2>
       <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
@@ -199,7 +199,7 @@ enabled = <span class="json-number">true</span>`;
   </section>
 
   <!-- The Problem Section -->
-  <section class="py-24 px-6">
+  <section class="py-16 md:py-24 px-4 md:px-6">
     <div class="max-w-4xl mx-auto">
       <h2 class="text-3xl font-bold mb-8 text-center">The Agent Iteration Problem</h2>
 
@@ -252,7 +252,7 @@ enabled = <span class="json-number">true</span>`;
   </section>
 
   <!-- Key Insight -->
-  <section class="py-24 px-6">
+  <section class="py-16 md:py-24 px-4 md:px-6">
     <div class="max-w-4xl mx-auto text-center">
       <h2 class="text-3xl font-bold mb-6">The Key Insight</h2>
       <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
@@ -265,7 +265,7 @@ enabled = <span class="json-number">true</span>`;
   </section>
 
   <!-- Early Benchmark Results -->
-  <section class="py-24 px-6 bg-gray-900/50">
+  <section class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">Early Benchmark Results</h2>
       <p class="text-gray-400 text-center mb-8 max-w-2xl mx-auto">
@@ -315,7 +315,7 @@ enabled = <span class="json-number">true</span>`;
   </section>
 
   <!-- How It Works -->
-  <section id="how-it-works" class="py-24 px-6 bg-gray-900/50">
+  <section id="how-it-works" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">How It Works</h2>
       <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
@@ -346,55 +346,55 @@ enabled = <span class="json-number">true</span>`;
   </section>
 
   <!-- Architecture -->
-  <section class="py-24 px-6">
+  <section class="py-16 md:py-24 px-4 md:px-6">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-12 text-center">Architecture</h2>
 
-      <div class="grid md:grid-cols-4 gap-6">
-        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
-          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
-            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div class="p-4 md:p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-3 md:mb-4 mx-auto">
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h3 class="font-semibold mb-2">Virtual File System</h3>
-          <p class="text-gray-400 text-sm">
+          <h3 class="font-semibold mb-2 text-sm md:text-base">Virtual File System</h3>
+          <p class="text-gray-400 text-xs md:text-sm">
             In-memory snapshots for speculative evaluation
           </p>
         </div>
 
-        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
-          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
-            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-4 md:p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-3 md:mb-4 mx-auto">
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
-          <h3 class="font-semibold mb-2">TypeScript Oracle</h3>
-          <p class="text-gray-400 text-sm">
+          <h3 class="font-semibold mb-2 text-sm md:text-base">TypeScript Oracle</h3>
+          <p class="text-gray-400 text-xs md:text-sm">
             Language Service for diagnostics and candidate fixes
           </p>
         </div>
 
-        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
-          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
-            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-4 md:p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-3 md:mb-4 mx-auto">
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
           </div>
-          <h3 class="font-semibold mb-2">Repair Planner</h3>
-          <p class="text-gray-400 text-sm">
+          <h3 class="font-semibold mb-2 text-sm md:text-base">Repair Planner</h3>
+          <p class="text-gray-400 text-xs md:text-sm">
             Greedy selection with solver fallback for conflicts
           </p>
         </div>
 
-        <div class="p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
-          <div class="w-12 h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-4 mx-auto">
-            <svg class="w-6 h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-4 md:p-6 rounded-xl bg-gray-900 border border-gray-800 text-center">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-repair-500/20 flex items-center justify-center mb-3 md:mb-4 mx-auto">
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-repair-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
           </div>
-          <h3 class="font-semibold mb-2">Classifier</h3>
-          <p class="text-gray-400 text-sm">
+          <h3 class="font-semibold mb-2 text-sm md:text-base">Classifier</h3>
+          <p class="text-gray-400 text-xs md:text-sm">
             Labels each diagnostic by disposition
           </p>
         </div>
@@ -403,7 +403,7 @@ enabled = <span class="json-number">true</span>`;
   </section>
 
   <!-- CLI Reference -->
-  <section id="cli" class="py-24 px-6 bg-gray-900/50">
+  <section id="cli" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">CLI Reference</h2>
       <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
@@ -481,7 +481,7 @@ ts-repair apply --plan plan.json</code></pre>
   </section>
 
   <!-- Agent Integration -->
-  <section id="agent-integration" class="py-24 px-6">
+  <section id="agent-integration" class="py-16 md:py-24 px-4 md:px-6">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">Agent Integration</h2>
       <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
@@ -539,7 +539,7 @@ ts-repair apply --plan plan.json</code></pre>
   </section>
 
   <!-- Dispositions -->
-  <section id="dispositions" class="py-24 px-6 bg-gray-900/50">
+  <section id="dispositions" class="py-16 md:py-24 px-4 md:px-6 bg-gray-900/50">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold mb-4 text-center">Diagnostic Dispositions</h2>
       <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
@@ -610,7 +610,7 @@ ts-repair apply --plan plan.json</code></pre>
   </section>
 
   <!-- Guarantees -->
-  <section class="py-24 px-6">
+  <section class="py-16 md:py-24 px-4 md:px-6">
     <div class="max-w-4xl mx-auto text-center">
       <h2 class="text-3xl font-bold mb-12">Guarantees</h2>
 
@@ -655,16 +655,16 @@ ts-repair apply --plan plan.json</code></pre>
   </section>
 
   <!-- Footer -->
-  <footer class="py-12 px-6 border-t border-gray-800 bg-gray-900/50">
+  <footer class="py-12 px-4 md:px-6 border-t border-gray-800 bg-gray-900/50">
     <div class="max-w-4xl mx-auto">
       <div class="flex flex-col md:flex-row justify-between items-start gap-8">
         <div>
           <span class="text-repair-400 font-bold text-lg">ts-repair</span>
           <p class="text-gray-500 text-sm mt-1">Verified TypeScript repairs for agents</p>
         </div>
-        <div class="flex gap-12">
+        <div class="flex gap-8 md:gap-12">
           <div>
-            <div class="text-gray-400 font-semibold mb-3">Documentation</div>
+            <div class="text-gray-400 font-semibold mb-3 text-sm md:text-base">Documentation</div>
             <div class="flex flex-col gap-2">
               <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/CLI.md" class="text-gray-500 hover:text-white transition-colors text-sm">CLI Reference</a>
               <a href="https://github.com/ts-repair/ts-repair/blob/main/docs/AGENT_INTEGRATION.md" class="text-gray-500 hover:text-white transition-colors text-sm">Agent Integration</a>
@@ -672,7 +672,7 @@ ts-repair apply --plan plan.json</code></pre>
             </div>
           </div>
           <div>
-            <div class="text-gray-400 font-semibold mb-3">Links</div>
+            <div class="text-gray-400 font-semibold mb-3 text-sm md:text-base">Links</div>
             <div class="flex flex-col gap-2">
               <a href="https://github.com/ts-repair/ts-repair" class="text-gray-500 hover:text-white transition-colors text-sm">GitHub</a>
               <a href="https://www.npmjs.com/package/ts-repair" class="text-gray-500 hover:text-white transition-colors text-sm">npm</a>
