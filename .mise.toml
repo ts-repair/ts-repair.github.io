@@ -1,0 +1,8 @@
+[tools]
+bun = "latest"
+
+[tasks.dev]
+run = "bun run dev"
+
+[tasks.install-deps]
+run = "bun install"
